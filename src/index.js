@@ -1,5 +1,6 @@
 import 'tachyons';
 import * as webnative from 'webnative';
+import * as dom from './dom';
 
 let fs;
 
@@ -29,15 +30,15 @@ webnative.initialize(fissionInit).then(async state => {
       const resultPath = fs.appPath(['results', 'add']);
       if (await fs.exists(resultPath)) {
         const stored = JSON.parse(await fs.read(resultPath));
-        revealStored(stored);
+        revealStoredResult(stored);
       }
 
-      reveal('store');
+      dom.reveal('store');
       break;
 
     case webnative.Scenario.NotAuthorised:
     case webnative.Scenario.AuthCancelled:
-      reveal('auth');
+      dom.reveal('auth');
       break;
   }
 
@@ -54,8 +55,8 @@ webnative.initialize(fissionInit).then(async state => {
           await fs.write(path, blob);
           await fs.publish();
 
-          hide('store-button-row');
-          reveal('list');
+          dom.hide('store-button-row');
+          dom.reveal('list');
         }
       })
     );
@@ -68,14 +69,14 @@ webnative.initialize(fissionInit).then(async state => {
         appendRow(directoryListing[key]);
       });
 
-      hide('list-button-row');
-      reveal('contents');
+      dom.hide('list-button-row');
+      dom.reveal('contents');
     }
   };
 
   const showRunSection = () => {
-    hide('show-run-button-row');
-    reveal('run');
+    dom.hide('show-run-button-row');
+    dom.reveal('run');
   };
 
   const add = async () => {
@@ -89,18 +90,18 @@ webnative.initialize(fissionInit).then(async state => {
           const buffer = await fs.read(path);
           WebAssembly.instantiate(buffer).then(async wasmObject => {
             const result = wasmObject.instance.exports.add(lhs, rhs);
-            updateResultNode(result);
+            dom.updateFirstChild('result', result);
 
             const resultPath = fs.appPath(['results', 'add']);
             const computation = { lhs, rhs, result };
             await fs.write(resultPath, JSON.stringify(computation));
             await fs.publish();
 
-            reveal('everywhere');
+            dom.reveal('everywhere');
           });
         }
       } else {
-        updateResultNode('🤖🤖💥');
+        dom.updateFirstChild('result', '🤖🤖💥');
       }
     }
   };
@@ -109,7 +110,7 @@ webnative.initialize(fissionInit).then(async state => {
     if (fs) {
       document.getElementById('lhs').value = '';
       document.getElementById('rhs').value = '';
-      updateResultNode('?');
+      dom.updateFirstChild('result', '?');
 
       const resultPath = fs.appPath(['results', 'add']);
       const noComputation = { lhs: '', rhs: '', result: '?' };
@@ -126,8 +127,8 @@ webnative.initialize(fissionInit).then(async state => {
       await fs.rm(resultPath);
       await fs.publish();
 
-      hide('list', 'contents', 'run', 'everywhere');
-      reveal(
+      dom.hide('list', 'contents', 'run', 'everywhere');
+      dom.reveal(
         'store',
         'store-button-row',
         'list-button-row',
@@ -149,46 +150,20 @@ webnative.initialize(fissionInit).then(async state => {
   initialize();
 });
 
-// ADDER
 
-let resultTextNode = document.createTextNode('?');
-document.getElementById('result').appendChild(resultTextNode);
+// REVEAL STORED RESULT
 
-const updateResultNode = val => {
-  const newTextNode = document.createTextNode(val);
-  document.getElementById('result').replaceChild(newTextNode, resultTextNode);
-  resultTextNode = newTextNode;
-};
-
-// REVEAL, HIDE AND SEEK
-
-const reveal = (...ids) => {
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    el.style.display = 'flex';
-    window.scrollTo({
-      top: el.getBoundingClientRect().top + window.scrollY,
-      behavior: 'smooth'
-    });
-  });
-};
-
-const hide = (...ids) => {
-  ids.forEach(id => {
-    document.getElementById(id).style.display = 'none';
-  });
-};
-
-const revealStored = async stored => {
+const revealStoredResult = async stored => {
   document.getElementById('lhs').value = stored.lhs;
   document.getElementById('rhs').value = stored.rhs;
-  updateResultNode(stored.result);
+  dom.updateFirstChild('result', stored.result);
 
-  hide('store-button-row', 'list-button-row', 'show-run-button-row', 'store');
-  reveal('run', 'everywhere');
+  dom.hide('store-button-row', 'list-button-row', 'show-run-button-row', 'store');
+  dom.reveal('run', 'everywhere');
 };
 
-// DIRECTORY LISTING TABLE
+
+// UPDATE DIRECTORY LISTING
 
 const appendRow = data => {
   const tr = document.createElement('tr');

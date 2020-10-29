@@ -1,6 +1,7 @@
-import 'tachyons';
 import * as webnative from 'webnative';
 import * as dom from './dom';
+import 'tachyons';
+import './main.css'
 
 let fs;
 
@@ -33,11 +34,13 @@ webnative.initialize(fissionInit).then(async state => {
         revealStoredResult(stored);
       }
 
+      dom.hide('loading-animation');
       dom.reveal('store');
       break;
 
     case webnative.Scenario.NotAuthorised:
     case webnative.Scenario.AuthCancelled:
+      dom.hide('loading-animation');
       dom.reveal('auth');
       break;
   }
@@ -47,6 +50,8 @@ webnative.initialize(fissionInit).then(async state => {
   };
 
   const store = async () => {
+    dom.reveal('loading-animation');
+
     fetch('add.wasm').then(response =>
       response.arrayBuffer().then(async buffer => {
         if (fs) {
@@ -55,7 +60,7 @@ webnative.initialize(fissionInit).then(async state => {
           await fs.write(path, blob);
           await fs.publish();
 
-          dom.hide('store-button-row');
+          dom.hide('store-button-row', 'loading-animation');
           dom.reveal('list');
         }
       })
@@ -120,6 +125,8 @@ webnative.initialize(fissionInit).then(async state => {
   };
 
   const reset = async () => {
+    dom.reveal('loading-animation');
+
     if (fs) {
       const funcPath = fs.appPath(['wasm', 'math', 'add.wasm']);
       const resultPath = fs.appPath(['results', 'add']);
@@ -127,7 +134,7 @@ webnative.initialize(fissionInit).then(async state => {
       await fs.rm(resultPath);
       await fs.publish();
 
-      dom.hide('list', 'contents', 'run', 'everywhere');
+      dom.hide('list', 'contents', 'run', 'everywhere', 'loading-animation');
       dom.reveal(
         'store',
         'store-button-row',
@@ -150,6 +157,7 @@ webnative.initialize(fissionInit).then(async state => {
   initialize();
 });
 
+dom.reveal('loading-animation');  // Show animation on page load
 
 // REVEAL STORED RESULT
 

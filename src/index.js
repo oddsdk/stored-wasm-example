@@ -125,6 +125,7 @@ webnative.initialize(fissionInit).then(async state => {
   };
 
   const reset = async () => {
+    dom.hide('store', 'list', 'contents', 'run', 'everywhere');
     dom.reveal('loading-animation');
 
     if (fs) {
@@ -134,7 +135,7 @@ webnative.initialize(fissionInit).then(async state => {
       await fs.rm(resultPath);
       await fs.publish();
 
-      dom.hide('list', 'contents', 'run', 'everywhere', 'loading-animation');
+      dom.hide('loading-animation')
       dom.reveal(
         'store',
         'store-button-row',

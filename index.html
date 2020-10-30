@@ -9,7 +9,7 @@
   <body>
     <div id="content" class="flex flex-column pa3 mw7 center">
       <div class="flex justify-center">
-        <h1>Storing Functions to Web Native Storage</h1>
+        <h1>Storing WASM in Web Native Storage</h1>
       </div>
       <div>
         <p class="f4 lh-copy">
@@ -28,28 +28,28 @@
       <div>
         <p class="f4 lh-copy">
           Our 
-          <a class="link underline-hover dark-blue" href="https://guide.fission.codes/">
+          <a class="link underline-hover dark-blue" href="https://guide.fission.codes/" target="_blank" rel="noopener noreferrer">
             Storing WebAssembly Modules guide
           </a> 
-          walks through this example in depth and you can also check out the 
-          <a class="link underline-hover dark-blue" href="https://github.com/bgins/fission-stored-wasm-example">
+          walks through the code in  this example and the
+          <a class="link underline-hover dark-blue" href="https://github.com/bgins/fission-stored-wasm-example" target="_blank" rel="noopener noreferrer">
             source code
           </a> 
-          on GitHub.
+          is on GitHub.
         </p>
       </div>
       <div id="auth" class="dn">
         <div>
           <div>
             <div class="f4 lh-copy">
-              We will use web native storage in your browser for this example. Please authenticate with 
+              We will use web native storage in your browser for this example. Please sign in with 
               Fission to get started.
             </div>
           </div>
           <div class="flex justify-center">
             <div class="pa4">
               <button id="auth-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
-                Authenticate with Fission
+                Sign in with Fission
               </button>
             </div>
           </div>
@@ -67,7 +67,7 @@
               it to web native storage. We will make a GET request, convert the 
               <code class="pa1 bg-near-white">Response</code> to an 
               <code class="pa1 bg-near-white">ArrayBuffer</code>, 
-              and then store it as a <code class="pa1 bg-near-white">Blob</code>.
+              and then store the buffer as a <code class="pa1 bg-near-white">Blob</code>.
             </div>
           </div>
           <div id="store-button-row" class="flex justify-center">
@@ -86,9 +86,9 @@
           </div>
           <div>
             <div class="f4 lh-copy">
-              We have stored <code class="pa1 bg-near-white">add.wasm</code> to the 
-              <code class="pa1 bg-near-white">wasm/math</code> directory in web native app storage.
-              Let's check to make sure it is there.
+              We have stored <code class="pa1 bg-near-white">add.wasm</code> to a
+              <code class="pa1 bg-near-white">wasm/math</code> directory in web native storage.
+              Let's list the contents of that directory to see if it is there.
             </div>
           </div>
           <div id="list-button-row" class="flex justify-center">
@@ -138,7 +138,7 @@
           </div>
           <div>
             <div class="f4 lh-copy">
-              We can now load our module from storage and ask it to add some numbers!
+              We can now load our module from storage and ask it to add some numbers.
             </div>
           </div>
           <div class="flex pa4 justify-center">
@@ -172,29 +172,37 @@
           </div>
           <div>
             <div class="f4 lh-copy">
-              We have published the stored module and the result of your computation to web native 
-              storage across the web. If you have authenticated your Fission account on another 
-              device, you can open this example and see the results there.
+              We have published the WASM module and the result of your computation to your web native 
+              storage across the web. If you have linked your Fission account on another 
+              device, you can 
+              <a class="link underline-hover dark-blue" href="https://quick-enormous-silicon-dinosaur.fission.app" target="_blank" rel="noopener noreferrer">
+                open this example
+              </a> 
+              and see the results there.
             </div>
           </div>
           <div class="pt3">
             <div class="f4 lh-copy">
-              If you are a new Fission user, you can authenticate on another device by following 
-              the instructions in our 
-              <a class="link underline-hover dark-blue" href="https://guide.fission.codes/hosting/account-linking">
+              See the
+              <a class="link underline-hover dark-blue" href="https://guide.fission.codes/hosting/account-linking" target="_blank" rel="noopener noreferrer">
                 Account Linking guide
-              </a>.
+              </a>
+              if you haven't linked your account on another device yet.
             </div>
           </div>
           <div class="pt3">
             <div class="f4 lh-copy">
-              Thank you trying this example! We are super excited about the future of web native compute,
-              and we look forward to the amazing things you might build with WebAssembly and stored functions.
+              Storing WASM modules means you only need to request them once. Any app that has access to a user's web native filesystem 
+              (WinFS) will retrieve stored modules in the background.
+            </div>
+          </div>
+          <div class="pt3">
+            <div class="f4 lh-copy">
               Check out our 
-              <a class="link underline-hover dark-blue" href="https://guide.fission.codes/webnative-sdk/web-native-introduction">
-                Web Native Introduction
+              <a class="link underline-hover dark-blue" href="https://blog.fission.codes/intro-web-native-apps/" target="_blank" rel="noopener noreferrer">
+                Introduction to Web Native Apps
               </a>
-              to learn more about web native and the future of computing beyond the edge.
+              to learn more about web native compute and storage.
             </div>
           </div>
           <div class="flex justify-center">

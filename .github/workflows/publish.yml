@@ -1,0 +1,22 @@
+name: Publish
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish_job:
+    name: 'Publish'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: 📦 Install packages
+        run: npm install
+      - name: 🏗 Build assets
+        run: npm run build
+      - name: 🚀 Publish to Fission!
+        uses: fission-suite/publish-action@v1
+        with:
+          machine_key: ${{ secrets.MACHINE_KEY }}

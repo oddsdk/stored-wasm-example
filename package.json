@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "webpack serve",
-    "build": "webpack && cp index.html dist/ && cp add.wasm dist/",
+    "build": "webpack && cp index.html dist/ && cp add.wasm dist/ && cp silicon-dinosaur.png dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Brian Ginsburg",

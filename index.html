@@ -1,225 +1,249 @@
 <!doctype html>
 
 <html>
-  <head>
-    <script defer type="module" src="main.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Karla&family=Work+Sans&display=swap" rel="stylesheet">
-    <link href="main.css" rel="stylesheet"></link>
-  </head>
-  <body>
-    <div id="content" class="flex flex-column pa3 mw7 center">
-      <div class="flex justify-center">
-        <h1>Storing WASM in Web Native Storage</h1>
-      </div>
-      <div>
-        <p class="f4 lh-copy">
-          This example demonstrates how to store WebAssembly modules in web native storage and 
-          execute them at a later time. We have compiled an
-          <code class="pa1 bg-near-white">add</code> function from C to WebAssembly.
-        </p>
-      </div>
-      <div class="flex bg-near-white">
-  <pre class="f4 lh-copy courier">
+
+<head>
+  <script defer type="module" src="main.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Karla&family=Work+Sans&display=swap" rel="stylesheet">
+  <link href="main.css" rel="stylesheet">
+  </link>
+  <meta property="og:title" content="Storing WASM modules in Web Native Storage">
+  <meta property="og:site_name" content="Quick Enormous Silicon Dinosaur">
+  <meta property="og:url" content="https://quick-enormous-silicon-dinosaur.fission.app">
+  <meta property="og:description"
+    content="A demo site showing how to store WebAssembly modules using Fission's Webnative SDK.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://quick-enormous-silicon-dinosaur.fission.app/silicon-dinosaur.png">
+  <title>Storing WASM in Web Native Storage - Quick Enormous Silicon Dinosaur</title>
+</head>
+
+<body>
+  <div id="content" class="flex flex-column pa3 mw7 center">
+    <div class="flex justify-center">
+      <h1>Storing WASM in Web Native Storage</h1>
+    </div>
+    <div>
+      <p class="f4 lh-copy">
+        This example demonstrates how to store WebAssembly modules in web native storage and
+        execute them at a later time. We have compiled an
+        <code class="pa1 bg-near-white">add</code> function from C to WebAssembly.
+      </p>
+    </div>
+    <div class="flex bg-near-white">
+      <pre class="f4 lh-copy courier">
   int add(int x, int y)
   {
     return x + y;
   }</pre>
-      </div>
+    </div>
+    <div>
+      <p class="f4 lh-copy">
+        Our
+        <a class="link underline-hover dark-blue"
+          href="https://guide.fission.codes/webassembly/storing-webassembly-modules" target="_blank"
+          rel="noopener noreferrer">
+          Storing WebAssembly Modules guide
+        </a>
+        walks through the code in this example and the
+        <a class="link underline-hover dark-blue" href="https://github.com/bgins/fission-stored-wasm-example"
+          target="_blank" rel="noopener noreferrer">
+          source code
+        </a>
+        is available on GitHub.
+      </p>
+    </div>
+    <div id="auth" class="dn">
       <div>
-        <p class="f4 lh-copy">
-          Our 
-          <a class="link underline-hover dark-blue" href="https://guide.fission.codes/webassembly/storing-webassembly-modules" target="_blank" rel="noopener noreferrer">
-            Storing WebAssembly Modules guide
-          </a> 
-          walks through the code in  this example and the
-          <a class="link underline-hover dark-blue" href="https://github.com/bgins/fission-stored-wasm-example" target="_blank" rel="noopener noreferrer">
-            source code
-          </a> 
-          is on GitHub.
-        </p>
-      </div>
-      <div id="auth" class="dn">
         <div>
-          <div>
-            <div class="f4 lh-copy">
-              We will use web native storage in your browser for this example. Please sign in with 
-              Fission to get started.
-            </div>
-          </div>
-          <div class="flex justify-center">
-            <div class="pa4">
-              <button id="auth-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
-                Sign in with Fission
-              </button>
-            </div>
+          <div class="f4 lh-copy">
+            We will use web native storage in your browser for this example. Please sign in with
+            Fission to get started.
           </div>
         </div>
-      </div>
-      <div id="store" class="dn">
-        <div>
-          <div class="flex justify-center">
-            <h2>Request and Store</h2>
-          </div>
-          <div>
-            <div class="f4 lh-copy">
-              Let's start off by requesting 
-              <code class="pa1 bg-near-white">add.wasm</code> and storing
-              it to web native storage. We will make a GET request, convert the 
-              <code class="pa1 bg-near-white">Response</code> to an 
-              <code class="pa1 bg-near-white">ArrayBuffer</code>, 
-              and then store the buffer as a <code class="pa1 bg-near-white">Blob</code>.
-            </div>
-          </div>
-          <div id="store-button-row" class="flex justify-center">
-            <div class="pa4">
-              <button id="store-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
-                Request and Store
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="list" class="dn">
-        <div>
-          <div class="flex justify-center">
-            <h2>List Storage</h2>
-          </div>
-          <div>
-            <div class="f4 lh-copy">
-              We have stored <code class="pa1 bg-near-white">add.wasm</code> to a
-              <code class="pa1 bg-near-white">wasm/math</code> directory in web native storage.
-              Let's list the contents of that directory to see if it is there.
-            </div>
-          </div>
-          <div id="list-button-row" class="flex justify-center">
-            <div class="pa4">
-              <button id="list-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
-                List directory contents
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="contents" class="dn">
-        <div>
-          <div class="flex justify-center overflow-auto">
-            <table class="f6 w-100 pa4 mw8" cellspacing="0">
-              <thead>
-                <tr>
-                  <th class="fw6 bb b--black-20 tl pb3 pr3 bg-white">name</th>
-                  <th class="fw6 bb b--black-20 tl pb3 pr3 bg-white">size</th>
-                  <th class="fw6 bb b--black-20 tl pb3 pr3 bg-white">mtime</th>
-                  <th class="fw6 bb b--black-20 tl pb3 pr3 bg-white">isFile</th>
-                </tr>
-              </thead>
-              <tbody id="directory-listing" class="lh-copy">
-              </tbody>
-            </table>
-          </div>
-          <div>
-            <div class="f4 lh-copy">
-              It worked! Files are stored in web native storage with their name, size, last 
-              modified time and flag that indicates whether they are a file or not.
-            </div>
-          </div>
-          <div id="show-run-button-row" class="flex justify-center">
-            <div class="pa4">
-              <button id="show-run-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
-                Next
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="run" class="dn">
-        <div>
-          <div class="flex justify-center">
-            <h2>Load and Run</h2>
-          </div>
-          <div>
-            <div class="f4 lh-copy">
-              We can now load our module from storage and ask it to add some numbers.
-            </div>
-          </div>
-          <div class="flex pa4 justify-center">
-            <input id="lhs" class="ph2 input-reset ba bg-transparent w-20" type="text">
-            <div class="pa3">+</div>
-            <input id="rhs" class="ph2 input-reset ba bg-transparent w-20" type="text">
-            <div class="pa3">=</div>
-            <div id="result" class="pv3">?</div>
-            <button id="add-button" class="f6 link dim br3 ph3 pv2 ml4 mv2 dib white bg-purple">
-              Add
-            </button>
-            <button id="clear-button" class="f6 link dim br3 ph3 pv2 ml3 mv2 dib white bg-purple">
-              Clear
+        <div class="flex justify-center">
+          <div class="pa4">
+            <button id="auth-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
+              Sign in with Fission
             </button>
           </div>
-          <div>
-            <div class="f4 lh-copy">
-              The module is loaded as an 
-              <code class="pa1 bg-near-white">ArrayBuffer</code> and instantiated as a  
-              <code class="pa1 bg-near-white">ResultObject</code> with a module and instance. We 
-              call the <code class="pa1 bg-near-white">add</code> function off the instance and 
-              display the result.
-            </div>
-          </div>
         </div>
-      </div>
-      <div id="everywhere" class="dn">
-        <div>
-          <div class="flex justify-center">
-            <h2>Your Maths are Everywhere</h2>
-          </div>
-          <div>
-            <div class="f4 lh-copy">
-              We have published the WASM module and the result of your computation to your web native 
-              storage across the web. If you have linked your Fission account on another 
-              device, you can 
-              <a class="link underline-hover dark-blue" href="https://quick-enormous-silicon-dinosaur.fission.app" target="_blank" rel="noopener noreferrer">
-                open this example
-              </a> 
-              and see the results there.
-            </div>
-          </div>
-          <div class="pt3">
-            <div class="f4 lh-copy">
-              See the
-              <a class="link underline-hover dark-blue" href="https://guide.fission.codes/accounts/account-linking" target="_blank" rel="noopener noreferrer">
-                Account Linking guide
-              </a>
-              if you haven't linked your account on another device yet.
-            </div>
-          </div>
-          <div class="pt3">
-            <div class="f4 lh-copy">
-              Storing WASM modules means you only need to request them once. Any app that has access to a user's web native filesystem 
-              (WinFS) will retrieve stored modules in the background.
-            </div>
-          </div>
-          <div class="pt3">
-            <div class="f4 lh-copy">
-              Check out our 
-              <a class="link underline-hover dark-blue" href="https://blog.fission.codes/intro-web-native-apps/" target="_blank" rel="noopener noreferrer">
-                Introduction to Web Native Apps
-              </a>
-              to learn more about web native compute and storage.
-            </div>
-          </div>
-          <div class="flex justify-center">
-            <div class="pa4">
-              <button id="reset-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
-                Reset this example
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="loading-animation" class="loading-animation">
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
       </div>
     </div>
-  </body>
+    <div id="store" class="dn">
+      <div>
+        <div class="flex justify-center">
+          <h2>Request and Store</h2>
+        </div>
+        <div>
+          <div class="f4 lh-copy">
+            Let's start off by requesting
+            <code class="pa1 bg-near-white">add.wasm</code> and storing
+            it to web native storage. We will make a GET request, convert the
+            <code class="pa1 bg-near-white">Response</code> to an
+            <code class="pa1 bg-near-white">ArrayBuffer</code>,
+            and then store the buffer as a <code class="pa1 bg-near-white">Blob</code>.
+          </div>
+        </div>
+        <div id="store-button-row" class="flex justify-center">
+          <div class="pa4">
+            <button id="store-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
+              Request and Store
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="list" class="dn">
+      <div>
+        <div class="flex justify-center">
+          <h2>List Storage</h2>
+        </div>
+        <div>
+          <div class="f4 lh-copy">
+            We have stored <code class="pa1 bg-near-white">add.wasm</code> to a
+            <code class="pa1 bg-near-white">wasm/math</code> directory in web native storage.
+            Let's list the contents of that directory to see if it is there.
+          </div>
+        </div>
+        <div id="list-button-row" class="flex justify-center">
+          <div class="pa4">
+            <button id="list-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
+              List directory contents
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="contents" class="dn">
+      <div>
+        <div class="flex justify-center overflow-auto">
+          <table class="f6 w-100 pa4 mw8" cellspacing="0">
+            <thead>
+              <tr>
+                <th class="fw6 bb b--black-20 tl pb3 pr3 bg-white">name</th>
+                <th class="fw6 bb b--black-20 tl pb3 pr3 bg-white">size</th>
+                <th class="fw6 bb b--black-20 tl pb3 pr3 bg-white">mtime</th>
+                <th class="fw6 bb b--black-20 tl pb3 pr3 bg-white">isFile</th>
+              </tr>
+            </thead>
+            <tbody id="directory-listing" class="lh-copy">
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="f4 lh-copy">
+            It worked! Files are stored in web native storage with their name, size, last
+            modified time and flag that indicates whether they are a file or not.
+          </div>
+        </div>
+        <div id="show-run-button-row" class="flex justify-center">
+          <div class="pa4">
+            <button id="show-run-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="run" class="dn">
+      <div>
+        <div class="flex justify-center">
+          <h2>Load and Run</h2>
+        </div>
+        <div>
+          <div class="f4 lh-copy">
+            We can now load our module from storage and ask it to add some numbers.
+          </div>
+        </div>
+        <div class="flex pa4 justify-center">
+          <input id="lhs" class="ph2 input-reset ba bg-transparent w-20" type="text">
+          <div class="pa3">+</div>
+          <input id="rhs" class="ph2 input-reset ba bg-transparent w-20" type="text">
+          <div class="pa3">=</div>
+          <div id="result" class="pv3">?</div>
+          <button id="add-button" class="f6 link dim br3 ph3 pv2 ml4 mv2 dib white bg-purple">
+            Add
+          </button>
+          <button id="clear-button" class="f6 link dim br3 ph3 pv2 ml3 mv2 dib white bg-purple">
+            Clear
+          </button>
+        </div>
+        <div>
+          <div class="f4 lh-copy">
+            The module is loaded as an
+            <code class="pa1 bg-near-white">ArrayBuffer</code> and instantiated as a
+            <code class="pa1 bg-near-white">ResultObject</code> with a module and instance. We
+            call the <code class="pa1 bg-near-white">add</code> function off the instance and
+            display the result.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="everywhere" class="dn">
+      <div>
+        <div class="flex justify-center">
+          <h2>Your Maths are Everywhere</h2>
+        </div>
+        <div>
+          <div class="f4 lh-copy">
+            We have published the WASM module and the result of your computation to your web native
+            storage across the web. If you have linked your Fission account on another
+            device, you can
+            <a class="link underline-hover dark-blue" href="https://quick-enormous-silicon-dinosaur.fission.app"
+              target="_blank" rel="noopener noreferrer">
+              open this example
+            </a>
+            and see the results there.
+          </div>
+        </div>
+        <div class="pt3">
+          <div class="f4 lh-copy">
+            See the
+            <a class="link underline-hover dark-blue" href="https://guide.fission.codes/accounts/account-linking"
+              target="_blank" rel="noopener noreferrer">
+              Account Linking guide
+            </a>
+            if you haven't linked your account on another device yet.
+          </div>
+        </div>
+        <div class="pt3">
+          <div class="f4 lh-copy">
+            Storing WASM modules means you only need to request them once. Any app that has access to a user's web
+            native filesystem
+            (WinFS) will retrieve stored modules in the background.
+          </div>
+        </div>
+        <div class="pt3">
+          <div class="f4 lh-copy">
+            Check out our
+            <a class="link underline-hover dark-blue" href="https://blog.fission.codes/intro-web-native-apps/"
+              target="_blank" rel="noopener noreferrer">
+              Introduction to Web Native Apps
+            </a>
+            to learn more about web native compute and storage. Read the
+            <a class="link underline-hover dark-blue" href="https://guide.fission.codes/developers/webnative"
+              target="_blank" rel="noopener noreferrer">
+              web native developer guide
+            </a>
+            to learn more about the web native SDK.
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <div class="pa4">
+            <button id="reset-button" class="f6 link dim br3 ph3 pv2 mb2 dib white bg-purple">
+              Reset this example
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="loading-animation" class="loading-animation">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+  </div>
+</body>
+
 </html>

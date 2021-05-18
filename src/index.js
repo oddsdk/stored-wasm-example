@@ -28,7 +28,7 @@ webnative.initialize(fissionInit).then(async state => {
         await fs.publish();
       }
 
-      const resultPath = fs.appPath(['results', 'add']);
+      const resultPath = fs.appPath(webnative.path.file('results', 'add'));
       if (await fs.exists(resultPath)) {
         const stored = JSON.parse(await fs.read(resultPath));
         revealStoredResult(stored);
@@ -55,7 +55,7 @@ webnative.initialize(fissionInit).then(async state => {
     fetch('add.wasm').then(response =>
       response.arrayBuffer().then(async buffer => {
         if (fs) {
-          const path = fs.appPath(['wasm', 'math', 'add.wasm']);
+          const path = fs.appPath(webnative.path.file('wasm', 'math', 'add.wasm'));
           const blob = new Blob([buffer], { type: 'application/wasm' });
           await fs.write(path, blob);
           await fs.publish();
@@ -69,7 +69,8 @@ webnative.initialize(fissionInit).then(async state => {
 
   const ls = async () => {
     if (fs) {
-      const directoryListing = await fs.ls(fs.appPath(['wasm', 'math']));
+      const directoryPath = fs.appPath(webnative.path.directory('wasm', 'math'))
+      const directoryListing = await fs.ls(directoryPath);
       Object.keys(directoryListing).forEach(function (key) {
         appendRow(directoryListing[key]);
       });
@@ -90,14 +91,14 @@ webnative.initialize(fissionInit).then(async state => {
 
     if (fs) {
       if (!Number.isNaN(lhs) && !Number.isNaN(rhs)) {
-        const path = fs.appPath(['wasm', 'math', 'add.wasm']);
+        const path = fs.appPath(webnative.path.file('wasm', 'math', 'add.wasm'));
         if (await fs.exists(path)) {
           const buffer = await fs.read(path);
           WebAssembly.instantiate(buffer).then(async wasmObject => {
             const result = wasmObject.instance.exports.add(lhs, rhs);
             dom.updateFirstChild('result', result);
 
-            const resultPath = fs.appPath(['results', 'add']);
+            const resultPath = fs.appPath(webnative.path.file('results', 'add'));
             const computation = { lhs, rhs, result };
             await fs.write(resultPath, JSON.stringify(computation));
             await fs.publish();
@@ -117,7 +118,7 @@ webnative.initialize(fissionInit).then(async state => {
       document.getElementById('rhs').value = '';
       dom.updateFirstChild('result', '?');
 
-      const resultPath = fs.appPath(['results', 'add']);
+      const resultPath = fs.appPath(webnative.path.file('results', 'add'));
       const noComputation = { lhs: '', rhs: '', result: '?' };
       await fs.write(resultPath, JSON.stringify(noComputation));
       await fs.publish();
@@ -129,8 +130,8 @@ webnative.initialize(fissionInit).then(async state => {
     dom.reveal('loading-animation');
 
     if (fs) {
-      const funcPath = fs.appPath(['wasm', 'math', 'add.wasm']);
-      const resultPath = fs.appPath(['results', 'add']);
+      const funcPath = fs.appPath(webnative.path.file('wasm', 'math', 'add.wasm'));
+      const resultPath = fs.appPath(webnative.path.file('results', 'add'));
       await fs.rm(funcPath);
       await fs.rm(resultPath);
       await fs.publish();
@@ -196,4 +197,4 @@ const appendCell = (tr, cellData) => {
   tr.appendChild(cell);
 };
 
-export {};
+export { };

@@ -61,7 +61,7 @@ webnative.initialize(fissionInit).then(async state => {
 
   const ls = async () => {
     if (fs) {
-      const directoryPath = fs.appPath(webnative.path.directory('wasm', 'math'))
+      const directoryPath = fs.appPath(webnative.path.directory('wasm', 'math'));
       const directoryListing = await fs.ls(directoryPath);
       Object.keys(directoryListing).forEach(function (key) {
         appendRow(directoryListing[key]);

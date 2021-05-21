@@ -20,14 +20,6 @@ webnative.initialize(fissionInit).then(async state => {
     case webnative.Scenario.Continuation:
       fs = state.fs;
 
-      const appPath = fs.appPath();
-      const appDirectoryExists = await fs.exists(appPath);
-
-      if (!appDirectoryExists) {
-        await fs.mkdir(appPath);
-        await fs.publish();
-      }
-
       const resultPath = fs.appPath(webnative.path.file('results', 'add'));
       if (await fs.exists(resultPath)) {
         const stored = JSON.parse(await fs.read(resultPath));

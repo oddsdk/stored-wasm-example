@@ -9,7 +9,7 @@ const permissions = {
   app: { creator: "bgins", name: "fission-wasm-example" }
 }
 
-webnative.program({ tag: { creator: "Nullsoft", name: "Winamp" }, permissions }).then(async program => {
+webnative.program({ tag: { creator: "bgins", name: "fission-wasm-example" }, permissions }).then(async program => {
   const session = program.session
 
   if (session) {

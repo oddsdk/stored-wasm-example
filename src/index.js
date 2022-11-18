@@ -5,40 +5,34 @@ import './main.css'
 
 let fs;
 
-const fissionInit = {
-  permissions: {
-    app: {
-      name: 'fission-wasm-example',
-      creator: 'bgins'
+const permissions = {
+  app: { creator: "bgins", name: "fission-wasm-example" }
+}
+
+webnative.program({ tag: { creator: "Nullsoft", name: "Winamp" }, permissions }).then(async program => {
+  const session = program.session
+
+  if (session) {
+    fs = session.fs;
+
+    const resultPath = webnative.appDataPath(permissions.app, webnative.path.file('results', 'add'));
+    if (await fs.exists(resultPath)) {
+      const stored = JSON.parse(new TextDecoder().decode(
+        await fs.read(resultPath)
+      ));
+      revealStoredResult(stored)
     }
-  }
-};
 
-webnative.initialize(fissionInit).then(async state => {
-  switch (state.scenario) {
-    case webnative.Scenario.AuthSucceeded:
-    case webnative.Scenario.Continuation:
-      fs = state.fs;
+    dom.hide('loading-animation');
+    dom.reveal('store');
 
-      const resultPath = fs.appPath(webnative.path.file('results', 'add'));
-      if (await fs.exists(resultPath)) {
-        const stored = JSON.parse(await fs.read(resultPath));
-        revealStoredResult(stored);
-      }
-
-      dom.hide('loading-animation');
-      dom.reveal('store');
-      break;
-
-    case webnative.Scenario.NotAuthorised:
-    case webnative.Scenario.AuthCancelled:
-      dom.hide('loading-animation');
-      dom.reveal('auth');
-      break;
+  } else {
+    dom.hide('loading-animation');
+    dom.reveal('auth');
   }
 
   const auth = () => {
-    webnative.redirectToLobby(state.permissions);
+    program.confidences.request(permissions)
   };
 
   const store = async () => {
@@ -47,7 +41,7 @@ webnative.initialize(fissionInit).then(async state => {
     fetch('add.wasm').then(response =>
       response.arrayBuffer().then(async buffer => {
         if (fs) {
-          const path = fs.appPath(webnative.path.file('wasm', 'math', 'add.wasm'));
+          const path = webnative.appDataPath(permissions.app, webnative.path.file('wasm', 'math', 'add.wasm'));
           const blob = new Blob([buffer], { type: 'application/wasm' });
           await fs.write(path, blob);
           await fs.publish();
@@ -61,7 +55,7 @@ webnative.initialize(fissionInit).then(async state => {
 
   const ls = async () => {
     if (fs) {
-      const directoryPath = fs.appPath(webnative.path.directory('wasm', 'math'));
+      const directoryPath = webnative.appDataPath(permissions.app, webnative.path.directory('wasm', 'math'));
       const directoryListing = await fs.ls(directoryPath);
       Object.keys(directoryListing).forEach(function (key) {
         appendRow(directoryListing[key]);
@@ -83,16 +77,16 @@ webnative.initialize(fissionInit).then(async state => {
 
     if (fs) {
       if (!Number.isNaN(lhs) && !Number.isNaN(rhs)) {
-        const path = fs.appPath(webnative.path.file('wasm', 'math', 'add.wasm'));
+        const path = webnative.appDataPath(permissions.app, webnative.path.file('wasm', 'math', 'add.wasm'));
         if (await fs.exists(path)) {
           const buffer = await fs.read(path);
           WebAssembly.instantiate(buffer).then(async wasmObject => {
             const result = wasmObject.instance.exports.add(lhs, rhs);
             dom.updateFirstChild('result', result);
 
-            const resultPath = fs.appPath(webnative.path.file('results', 'add'));
+            const resultPath = webnative.appDataPath(permissions.app, webnative.path.file('results', 'add'));
             const computation = { lhs, rhs, result };
-            await fs.write(resultPath, JSON.stringify(computation));
+            await fs.write(resultPath, new TextEncoder().encode(JSON.stringify(computation)));
             await fs.publish();
 
             dom.reveal('everywhere');
@@ -110,7 +104,7 @@ webnative.initialize(fissionInit).then(async state => {
       document.getElementById('rhs').value = '';
       dom.updateFirstChild('result', '?');
 
-      const resultPath = fs.appPath(webnative.path.file('results', 'add'));
+      const resultPath = webnative.appDataPath(permissions.app, webnative.path.file('results', 'add'));
       const noComputation = { lhs: '', rhs: '', result: '?' };
       await fs.write(resultPath, JSON.stringify(noComputation));
       await fs.publish();
@@ -122,8 +116,8 @@ webnative.initialize(fissionInit).then(async state => {
     dom.reveal('loading-animation');
 
     if (fs) {
-      const funcPath = fs.appPath(webnative.path.file('wasm', 'math', 'add.wasm'));
-      const resultPath = fs.appPath(webnative.path.file('results', 'add'));
+      const funcPath = webnative.appDataPath(permissions.app, webnative.path.file('wasm', 'math', 'add.wasm'));
+      const resultPath = webnative.appDataPath(permissions.app, webnative.path.file('results', 'add'));
       await fs.rm(funcPath);
       await fs.rm(resultPath);
       await fs.publish();

@@ -5,7 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "tachyons": "^4.12.0",
-    "webnative": "^0.31.0"
+    "webnative": "^0.31.0",
+    "wasm-test": "file:../pkg"
   },
   "devDependencies": {
     "css-loader": "^4.3.0",

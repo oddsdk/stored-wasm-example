@@ -181,7 +181,6 @@ const appendRow = data => {
 
   appendCell(tr, data.name);
   appendCell(tr, data.size);
-  appendCell(tr, data.mtime);
   appendCell(tr, data.isFile);
 
   const tbody = document.getElementById('directory-listing');

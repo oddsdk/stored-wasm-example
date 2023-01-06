@@ -5,145 +5,159 @@ import './main.css'
 
 let fs;
 
+const appInfo = { creator: "bgins", name: "fission-wasm-example" }
+
 const permissions = {
-  app: { creator: "bgins", name: "fission-wasm-example" }
+  app: appInfo
 }
 
-webnative.program({ namespace: { creator: "bgins", name: "fission-wasm-example" }, permissions }).then(async program => {
-  const session = program.session
+webnative.program(
+  {
+    namespace: appInfo,
+    permissions
+  }).then(async program => {
+    const session = program.session
 
-  if (session) {
-    fs = session.fs;
+    if (session) {
+      fs = session.fs;
 
-    const resultPath = webnative.appDataPath(permissions.app, webnative.path.file('results', 'add'));
-    if (await fs.exists(resultPath)) {
-      const stored = JSON.parse(new TextDecoder().decode(
-        await fs.read(resultPath)
-      ));
-      revealStoredResult(stored)
+      const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
+
+      if (await fs.exists(resultPath)) {
+        const stored = JSON.parse(new TextDecoder().decode(
+          await fs.read(resultPath)
+        ));
+        revealStoredResult(stored)
+      }
+
+      dom.hide('loading-animation');
+      dom.reveal('store');
+
+    } else {
+      dom.hide('loading-animation');
+      dom.reveal('auth');
     }
 
-    dom.hide('loading-animation');
-    dom.reveal('store');
+    const auth = () => {
+      program.capabilities.request(permissions)
+    };
 
-  } else {
-    dom.hide('loading-animation');
-    dom.reveal('auth');
-  }
+    const store = async () => {
+      dom.reveal('loading-animation');
 
-  const auth = () => {
-    program.confidences.request(permissions)
-  };
+      fetch('add.wasm').then(response =>
+        response.arrayBuffer().then(async buffer => {
+          if (fs) {
+            const path = webnative.path.appData(appInfo, webnative.path.file('wasm', 'math', 'add.wasm'));
+            const blob = new Blob([buffer], { type: 'application/wasm' });
 
-  const store = async () => {
-    dom.reveal('loading-animation');
-
-    fetch('add.wasm').then(response =>
-      response.arrayBuffer().then(async buffer => {
-        if (fs) {
-          const path = webnative.appDataPath(permissions.app, webnative.path.file('wasm', 'math', 'add.wasm'));
-          const blob = new Blob([buffer], { type: 'application/wasm' });
-          await fs.write(path, blob);
-          await fs.publish();
-
-          dom.hide('store-button-row', 'loading-animation');
-          dom.reveal('list');
-        }
-      })
-    );
-  };
-
-  const ls = async () => {
-    if (fs) {
-      const directoryPath = webnative.appDataPath(permissions.app, webnative.path.directory('wasm', 'math'));
-      const directoryListing = await fs.ls(directoryPath);
-      Object.keys(directoryListing).forEach(function (key) {
-        appendRow(directoryListing[key]);
-      });
-
-      dom.hide('list-button-row');
-      dom.reveal('contents');
-    }
-  };
-
-  const showRunSection = () => {
-    dom.hide('show-run-button-row');
-    dom.reveal('run');
-  };
-
-  const add = async () => {
-    const lhs = +document.getElementById('lhs').value;
-    const rhs = +document.getElementById('rhs').value;
-
-    if (fs) {
-      if (!Number.isNaN(lhs) && !Number.isNaN(rhs)) {
-        const path = webnative.appDataPath(permissions.app, webnative.path.file('wasm', 'math', 'add.wasm'));
-        if (await fs.exists(path)) {
-          const buffer = await fs.read(path);
-          WebAssembly.instantiate(buffer).then(async wasmObject => {
-            const result = wasmObject.instance.exports.add(lhs, rhs);
-            dom.updateFirstChild('result', result);
-
-            const resultPath = webnative.appDataPath(permissions.app, webnative.path.file('results', 'add'));
-            const computation = { lhs, rhs, result };
-            await fs.write(resultPath, new TextEncoder().encode(JSON.stringify(computation)));
+            await fs.write(path, blob);
             await fs.publish();
 
-            dom.reveal('everywhere');
-          });
-        }
-      } else {
-        dom.updateFirstChild('result', '🤖🤖💥');
-      }
-    }
-  };
-
-  const clear = async () => {
-    if (fs) {
-      document.getElementById('lhs').value = '';
-      document.getElementById('rhs').value = '';
-      dom.updateFirstChild('result', '?');
-
-      const resultPath = webnative.appDataPath(permissions.app, webnative.path.file('results', 'add'));
-      const noComputation = { lhs: '', rhs: '', result: '?' };
-      await fs.write(resultPath, JSON.stringify(noComputation));
-      await fs.publish();
-    }
-  };
-
-  const reset = async () => {
-    dom.hide('store', 'list', 'contents', 'run', 'everywhere');
-    dom.reveal('loading-animation');
-
-    if (fs) {
-      const funcPath = webnative.appDataPath(permissions.app, webnative.path.file('wasm', 'math', 'add.wasm'));
-      const resultPath = webnative.appDataPath(permissions.app, webnative.path.file('results', 'add'));
-      await fs.rm(funcPath);
-      await fs.rm(resultPath);
-      await fs.publish();
-
-      dom.hide('loading-animation')
-      dom.reveal(
-        'store',
-        'store-button-row',
-        'list-button-row',
-        'show-run-button-row'
+            dom.hide('store-button-row', 'loading-animation');
+            dom.reveal('list');
+          }
+        })
       );
-    }
-  };
+    };
 
-  const initialize = () => {
-    document.getElementById('auth-button').onclick = auth;
-    document.getElementById('store-button').onclick = store;
-    document.getElementById('list-button').onclick = ls;
-    document.getElementById('show-run-button').onclick = showRunSection;
-    document.getElementById('add-button').onclick = add;
-    document.getElementById('clear-button').onclick = clear;
-    document.getElementById('reset-button').onclick = reset;
-  };
+    const ls = async () => {
+      if (fs) {
+        const directoryPath = webnative.path.appData(appInfo, webnative.path.directory('wasm', 'math'));
+        const directoryListing = await fs.ls(directoryPath);
 
-  initialize();
-});
+        Object.keys(directoryListing).forEach(function (key) {
+          appendRow(directoryListing[key]);
+        });
+
+        dom.hide('list-button-row');
+        dom.reveal('contents');
+      }
+    };
+
+    const showRunSection = () => {
+      dom.hide('show-run-button-row');
+      dom.reveal('run');
+    };
+
+    const add = async () => {
+      const lhs = +document.getElementById('lhs').value;
+      const rhs = +document.getElementById('rhs').value;
+
+      if (fs) {
+        if (!Number.isNaN(lhs) && !Number.isNaN(rhs)) {
+          const path = webnative.path.appData(appInfo, webnative.path.file('wasm', 'math', 'add.wasm'));
+
+          if (await fs.exists(path)) {
+            const buffer = await fs.read(path);
+
+            WebAssembly.instantiate(buffer).then(async wasmObject => {
+              const result = wasmObject.instance.exports.add(lhs, rhs);
+              dom.updateFirstChild('result', result);
+
+              const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
+              const computation = { lhs, rhs, result };
+
+              await fs.write(resultPath, new TextEncoder().encode(JSON.stringify(computation)));
+              await fs.publish();
+
+              dom.reveal('everywhere');
+            });
+          }
+        } else {
+          dom.updateFirstChild('result', '🤖🤖💥');
+        }
+      }
+    };
+
+    const clear = async () => {
+      if (fs) {
+        document.getElementById('lhs').value = '';
+        document.getElementById('rhs').value = '';
+        dom.updateFirstChild('result', '?');
+
+        const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
+        const noComputation = { lhs: '', rhs: '', result: '?' };
+
+        await fs.write(resultPath, JSON.stringify(noComputation));
+        await fs.publish();
+      }
+    };
+
+    const reset = async () => {
+      dom.hide('store', 'list', 'contents', 'run', 'everywhere');
+      dom.reveal('loading-animation');
+
+      if (fs) {
+        const funcPath = webnative.path.appData(appInfo, webnative.path.file('wasm', 'math', 'add.wasm'));
+        const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
+
+        await fs.rm(funcPath);
+        await fs.rm(resultPath);
+        await fs.publish();
+
+        dom.hide('loading-animation')
+        dom.reveal(
+          'store',
+          'store-button-row',
+          'list-button-row',
+          'show-run-button-row'
+        );
+      }
+    };
+
+    const initialize = () => {
+      document.getElementById('auth-button').onclick = auth;
+      document.getElementById('store-button').onclick = store;
+      document.getElementById('list-button').onclick = ls;
+      document.getElementById('show-run-button').onclick = showRunSection;
+      document.getElementById('add-button').onclick = add;
+      document.getElementById('clear-button').onclick = clear;
+      document.getElementById('reset-button').onclick = reset;
+    };
+
+    initialize();
+  });
 
 dom.reveal('loading-animation');  // Show animation on page load
 

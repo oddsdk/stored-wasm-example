@@ -81,22 +81,22 @@ webnative.program(
     };
 
     const add = async () => {
-      const lhs = +document.getElementById('lhs').value;
-      const rhs = +document.getElementById('rhs').value;
+      const left = +document.getElementById('left').value;
+      const right = +document.getElementById('right').value;
 
       if (fs) {
-        if (!Number.isNaN(lhs) && !Number.isNaN(rhs)) {
+        if (!Number.isNaN(left) && !Number.isNaN(right)) {
           const path = webnative.path.appData(appInfo, webnative.path.file('wasm', 'math', 'add.wasm'));
 
           if (await fs.exists(path)) {
             const buffer = await fs.read(path);
 
             WebAssembly.instantiate(buffer).then(async wasmObject => {
-              const result = wasmObject.instance.exports.add(lhs, rhs);
+              const result = wasmObject.instance.exports.add(left, right);
               dom.updateFirstChild('result', result);
 
               const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
-              const computation = { lhs, rhs, result };
+              const computation = { left, right, result };
 
               await fs.write(resultPath, new TextEncoder().encode(JSON.stringify(computation)));
               await fs.publish();
@@ -112,12 +112,12 @@ webnative.program(
 
     const clear = async () => {
       if (fs) {
-        document.getElementById('lhs').value = '';
-        document.getElementById('rhs').value = '';
+        document.getElementById('left').value = '';
+        document.getElementById('right').value = '';
         dom.updateFirstChild('result', '?');
 
         const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
-        const noComputation = { lhs: '', rhs: '', result: '?' };
+        const noComputation = { left: '', right: '', result: '?' };
 
         await fs.write(resultPath, JSON.stringify(noComputation));
         await fs.publish();
@@ -164,8 +164,8 @@ dom.reveal('loading-animation');  // Show animation on page load
 // REVEAL STORED RESULT
 
 const revealStoredResult = async stored => {
-  document.getElementById('lhs').value = stored.lhs;
-  document.getElementById('rhs').value = stored.rhs;
+  document.getElementById('left').value = stored.left;
+  document.getElementById('right').value = stored.right;
   dom.updateFirstChild('result', stored.result);
 
   dom.hide('store-button-row', 'list-button-row', 'show-run-button-row', 'store');

@@ -21,7 +21,7 @@ npm install
 To run the example locally:
 
 ```
-npm start
+npm run dev
 ```
 
 ## Build

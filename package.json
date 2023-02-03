@@ -16,7 +16,7 @@
     "webpack-dev-server": "^4.3.0"
   },
   "scripts": {
-    "start": "webpack serve",
+    "dev": "webpack serve",
     "build": "webpack && cp index.html add.wasm silicon-dinosaur.png favicon.svg dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

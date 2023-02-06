@@ -1,5 +1,5 @@
 [![Built by FISSION](https://img.shields.io/badge/⌘-Built_by_FISSION-purple.svg)](https://fission.codes)
-[![Built by FISSION](https://img.shields.io/badge/webnative-v0.35.2-purple.svg )](https://github.com/fission-suite/webnative)
+[![Built by FISSION](https://img.shields.io/badge/webnative-v0.36.1-purple.svg )](https://github.com/fission-suite/webnative)
 [![Discord](https://img.shields.io/discord/478735028319158273.svg)](https://discord.gg/zAQBDEq)
 [![Discourse](https://img.shields.io/discourse/https/talk.fission.codes/topics)](https://talk.fission.codes)
 
@@ -21,7 +21,7 @@ npm install
 To run the example locally:
 
 ```
-npm start
+npm run dev
 ```
 
 ## Build

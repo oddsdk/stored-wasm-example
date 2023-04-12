@@ -1,4 +1,4 @@
-import * as webnative from 'webnative';
+import * as odd from '@oddjs/odd';
 import * as dom from './dom';
 import 'tachyons';
 import './main.css'
@@ -11,9 +11,10 @@ const permissions = {
   app: appInfo
 }
 
-webnative.program(
+odd.program(
   {
     namespace: appInfo,
+    debug: true,
     permissions
   }).then(async program => {
     const session = program.session
@@ -21,7 +22,7 @@ webnative.program(
     if (session) {
       fs = session.fs;
 
-      const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
+      const resultPath = odd.path.appData(appInfo, odd.path.file('results', 'add'));
 
       if (await fs.exists(resultPath)) {
         const stored = JSON.parse(new TextDecoder().decode(
@@ -48,7 +49,7 @@ webnative.program(
       fetch('add.wasm').then(response =>
         response.arrayBuffer().then(async buffer => {
           if (fs) {
-            const path = webnative.path.appData(appInfo, webnative.path.file('wasm', 'math', 'add.wasm'));
+            const path = odd.path.appData(appInfo, odd.path.file('wasm', 'math', 'add.wasm'));
             const blob = new Blob([buffer], { type: 'application/wasm' });
 
             await fs.write(path, blob);
@@ -63,7 +64,7 @@ webnative.program(
 
     const ls = async () => {
       if (fs) {
-        const directoryPath = webnative.path.appData(appInfo, webnative.path.directory('wasm', 'math'));
+        const directoryPath = odd.path.appData(appInfo, odd.path.directory('wasm', 'math'));
         const directoryListing = await fs.ls(directoryPath);
 
         Object.keys(directoryListing).forEach(function (key) {
@@ -86,7 +87,7 @@ webnative.program(
 
       if (fs) {
         if (!Number.isNaN(left) && !Number.isNaN(right)) {
-          const path = webnative.path.appData(appInfo, webnative.path.file('wasm', 'math', 'add.wasm'));
+          const path = odd.path.appData(appInfo, odd.path.file('wasm', 'math', 'add.wasm'));
 
           if (await fs.exists(path)) {
             const buffer = await fs.read(path);
@@ -95,7 +96,7 @@ webnative.program(
               const result = wasmObject.instance.exports.add(left, right);
               dom.updateFirstChild('result', result);
 
-              const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
+              const resultPath = odd.path.appData(appInfo, odd.path.file('results', 'add'));
               const computation = { left, right, result };
 
               await fs.write(resultPath, new TextEncoder().encode(JSON.stringify(computation)));
@@ -116,7 +117,7 @@ webnative.program(
         document.getElementById('right').value = '';
         dom.updateFirstChild('result', '?');
 
-        const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
+        const resultPath = odd.path.appData(appInfo, odd.path.file('results', 'add'));
         const noComputation = { left: '', right: '', result: '?' };
 
         await fs.write(resultPath, JSON.stringify(noComputation));
@@ -129,8 +130,8 @@ webnative.program(
       dom.reveal('loading-animation');
 
       if (fs) {
-        const funcPath = webnative.path.appData(appInfo, webnative.path.file('wasm', 'math', 'add.wasm'));
-        const resultPath = webnative.path.appData(appInfo, webnative.path.file('results', 'add'));
+        const funcPath = odd.path.appData(appInfo, odd.path.file('wasm', 'math', 'add.wasm'));
+        const resultPath = odd.path.appData(appInfo, odd.path.file('results', 'add'));
 
         await fs.rm(funcPath);
         await fs.rm(resultPath);

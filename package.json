@@ -1,11 +1,11 @@
 {
   "name": "fission-stored-wasm-example",
   "version": "0.1.0",
-  "description": "Demonstration of stored wasm modules with webnative storage",
+  "description": "Demonstration of stored wasm modules with the ODD SDK",
   "main": "index.js",
   "dependencies": {
     "tachyons": "^4.12.0",
-    "webnative": "^0.36.1"
+    "@oddjs/odd": "^0.37.0"
   },
   "devDependencies": {
     "css-loader": "^4.3.0",
